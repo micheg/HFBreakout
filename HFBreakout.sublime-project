@@ -1,0 +1,25 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"name": "HFBreakout",
+			"path": "/Users/michelangelo/dev/hx/HFBreakout"
+		},
+		{
+			"follow_symlinks": true,
+			"name": "Flixel",
+			"path": "/opt/hx/flixel/6,0,0/"
+		},
+		{
+			"follow_symlinks": true,
+			"name": "Flixel Addons",
+			"path": "/opt/hx/flixel-addons/3,3,2/"
+		},
+		{
+			"follow_symlinks": true,
+			"name": "Haxe",
+			"path": "/usr/local/lib/haxe/std"
+		}
+	]
+}
