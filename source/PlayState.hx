@@ -8,8 +8,10 @@ import flixel.util.FlxColor;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxAxes;
 import flixel.util.FlxSpriteUtil;
+import flixel.math.FlxMath;
 import ObjectFactory;
 import flixel.sound.FlxSound;
+import LevelFactory;
 
 class PlayState extends FlxState
 {
@@ -17,7 +19,7 @@ class PlayState extends FlxState
 	var paddle:FlxSprite = null;
 	var ball:FlxSprite = null;
 	var BALL_SPEED:Float = 200;
-	var PADDLE_SPEED:Float = 260;
+	var PADDLE_SPEED:Float = 300;
 	var grpWalls:FlxTypedGroup<FlxSprite> = null;
 	var grpBricks:FlxTypedGroup<FlxSprite> = null;
 	var score:Int = 0;
@@ -26,6 +28,7 @@ class PlayState extends FlxState
 	// state
 	var gameStarted:Bool = false;
 	var gameEnded:Bool = false;
+	var currentLevel:Int = 0;
 
 	// sound
 	var sndHit:FlxSound = null;
@@ -46,6 +49,7 @@ class PlayState extends FlxState
         grpBricks = ObjectFactory.createBricks();
         scoreLabel = ObjectFactory.createText();
         sndHit = ObjectFactory.CreateSound();
+        grpBricks = LevelFactory.createBricks(currentLevel);
     }
 
     private function addObjects()
@@ -68,23 +72,40 @@ class PlayState extends FlxState
 
 	private function hitBall(Ball:FlxSprite, Paddle:FlxSprite)
 	{
-		var ballMid:Int = Std.int(Ball.x + Ball.width / 2);
-		var paddleMid:Int = Std.int(Paddle.x + Paddle.width / 2);
+	    var ballMid:Float = Ball.x + Ball.width / 2;
+	    var paddleMid:Float = Paddle.x + Paddle.width / 2;
+	    var paddleWidth:Float = Paddle.width;
 
-		if (ballMid < paddleMid)
-		{
-		    Ball.velocity.x = -BALL_SPEED;
-		}
-		else if (ballMid > paddleMid)
-		{
-		    Ball.velocity.x = BALL_SPEED;
-		}
-		else
-		{
-		    Ball.velocity.x = 0;
-		}
-		sndHit.play(true);
+	    // Calcola la distanza relativa dalla posizione centrale del paddle
+	    var relativeHit:Float = (ballMid - paddleMid) / (paddleWidth / 2);
+
+	    // Determina l'angolo di rimbalzo in base alla distanza dal centro
+	    var bounceAngle:Float = 0;
+	    
+	    if (Math.abs(relativeHit) < 0.33) { 
+	        bounceAngle = 30;  // Vicino al centro
+	    } 
+	    else if (Math.abs(relativeHit) < 0.66) { 
+	        bounceAngle = 45;  // Zona intermedia
+	    } 
+	    else { 
+	        bounceAngle = 60;  // Bordo esterno
+	    }
+
+	    // Determina la direzione orizzontale in base a dove ha colpito
+	    if (relativeHit < 0)
+	        Ball.velocity.x = -BALL_SPEED; // Verso sinistra
+	    else
+	        Ball.velocity.x = BALL_SPEED;  // Verso destra
+
+	    // Imposta la velocità verticale fissa verso l'alto
+	    Ball.velocity.y = -BALL_SPEED * (bounceAngle / 60); // Più inclinato = meno velocità verticale
+
+	    // Suono di impatto
+	    sndHit.play(true);
 	}
+
+
 
 	private function checkState():Void
 	{
@@ -132,6 +153,9 @@ class PlayState extends FlxState
         {
         	handleCollisions();
         	handlePaddleMovement();
+        }
+        else {
+        	paddle.velocity.x = 0;
         }
     }
 
