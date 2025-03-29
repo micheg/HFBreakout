@@ -38,23 +38,6 @@ class ObjectFactory
         return _ball;
     }
 
-    public static function createBricks():FlxTypedGroup<FlxSprite>
-    {
-        var _grpBricks = new FlxTypedGroup<FlxSprite>();
-
-        for (row in 0...4)
-        {
-            for (col in 0...6)
-            {
-                var b = new FlxSprite(80 + col * 80, 64 + row * 32, AssetPaths.brick__png);
-                b.immovable = true;
-                b.color = 0xffea006e;
-                _grpBricks.add(b);
-            }
-        }
-        return _grpBricks;
-    }
-
     public static function createWalls():FlxTypedGroup<FlxSprite>
     {
         var walls = new FlxTypedGroup<FlxSprite>();
